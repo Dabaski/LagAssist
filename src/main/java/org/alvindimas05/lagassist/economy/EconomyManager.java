@@ -52,7 +52,7 @@ public class EconomyManager {
 		if (econ == null) {
 			return;
 		}
-    	Bukkit.getScheduler().runTaskTimer(Main.p, () -> {
+    	Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
     		for (Entry<OfflinePlayer, Double> entr : cache.entrySet()) {
     			
     			

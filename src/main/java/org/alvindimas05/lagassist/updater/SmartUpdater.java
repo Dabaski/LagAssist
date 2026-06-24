@@ -31,9 +31,7 @@ public class SmartUpdater {
 
 		UpdateCondition.Enabler();
 
-		Bukkit.getScheduler().runTaskAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		Bukkit.getAsyncScheduler().runNow(Main.p, (task) -> {
 				ui = getNextUpdate();
 
 				if (ui == null) {
@@ -50,7 +48,6 @@ public class SmartUpdater {
 				Bukkit.getLogger().info("    §2[§e֍§2] §fDownloads: " + ui.getDownloads());
 				Bukkit.getLogger().info("    §2[§e֍§2] §fFor more info, use §2/lagassist changelog");
 
-			}
 		});
 
 	}

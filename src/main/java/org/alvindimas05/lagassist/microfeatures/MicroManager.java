@@ -39,7 +39,7 @@ public class MicroManager implements Listener {
 	}
 
 	private static void runTask() {
-		Bukkit.getScheduler().runTaskTimer(Main.p, () -> {
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
 			for (BlockState b : breakables) {
 				b.getBlock().breakNaturally();
 				b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getBlockData());

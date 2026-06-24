@@ -31,51 +31,14 @@ public class StackMonitor {
 
 	private static void runTask() {
 		// Synchronizer tool.
-		Bukkit.getScheduler().runTaskTimer(Main.p, () -> {
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (mtask) -> {
 
 			List<Entity> ents = new ArrayList<Entity>();
 			for (World w : Bukkit.getWorlds()) {
 				ents.addAll(w.getEntities());
 			}
 
-//			for (Entity ent : ents) {
-//				if (ent == null) {
-//					continue;
-//				}
-//
-//				if (!(ent instanceof LivingEntity)) {
-//					continue;
-//				}
-//
-//				if (ent instanceof HumanEntity) {
-//					continue;
-//				}
-//
-//				Location old = null;
-//				if (entities.containsKey(ent)) {
-//					old = entities.get(ent);
-//				}
-//				Location loc = ent.getLocation();
-//
-//				if (loc.equals(old)) {
-//					continue;
-//				}
-//
-//				entities.put(ent, loc);
-//
-//				if (!runMove(old, loc)) {
-//					continue;
-//				}
-//
-//				events.add(new SplitChangeEvent(ent, old, loc));
-//
-//				for (SplitChangeEvent event : events) {
-//					Bukkit.getPluginManager().callEvent(event);
-//				}
-//				events.clear();
-//			}
-
-			Bukkit.getScheduler().runTaskAsynchronously(Main.p, () -> {
+			Bukkit.getAsyncScheduler().runNow(Main.p, (atask) -> {
 				for (Entity ent : ents) {
 					if (ent == null) {
 						continue;

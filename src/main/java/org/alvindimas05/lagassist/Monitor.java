@@ -2,15 +2,17 @@ package org.alvindimas05.lagassist;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.alvindimas05.lagassist.mobs.SmartMob;
 import org.alvindimas05.lagassist.mobs.SpawnerMgr;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import org.alvindimas05.lagassist.hoppers.ChunkHoppers;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 public class Monitor {
 
@@ -24,7 +26,7 @@ public class Monitor {
 
 	public static int mondelay;
 
-	private static BukkitTask btk;
+	private static ScheduledTask btk;
 
 	public static void Enabler(boolean reload) {
 		Bukkit.getLogger().info("    §e[§a✔§e] §fLag Monitor.");
@@ -35,7 +37,7 @@ public class Monitor {
 		mondelay = Main.config.getInt("lag-measures.timer");
 		
 		if (!reload) {
-			Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.p, new ExactTPS(), 100L, 1L);
+			Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> new ExactTPS().run(), 100L, 1L);
 			
 			LagDetect();
 			GetExactTPS();
@@ -134,44 +136,28 @@ public class Monitor {
 	}
 
 	public static void LagDetect() {
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.p, new Runnable() {
-					@Override
-					public void run() {
-						if (Main.config.getBoolean("lag-measures.announce.enabled")) {
-							Bukkit.getLogger().info("    §e[§a☯§e] §fRunning lag check task.");
-						}
+		Bukkit.getAsyncScheduler().runAtFixedRate(Main.p, (task) -> {
+			Bukkit.getGlobalRegionScheduler().execute(Main.p, () -> {
+				if (Main.config.getBoolean("lag-measures.announce.enabled")) {
+					Bukkit.getLogger().info("    §e[§a☯§e] §fRunning lag check task.");
+				}
 
-						LagMeasures(Double.valueOf(getTPS(0)));
-					}
-				}, 0L);
-			}
-
-		}, mondelay, mondelay);
+				LagMeasures(Double.valueOf(getTPS(0)));
+			});
+		}, mondelay * 50L, mondelay * 50L, TimeUnit.MILLISECONDS);
 	}
 
 	public static void GetExactTPS() {
-		btk = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Bukkit.getScheduler().scheduleSyncDelayedTask(Main.p, new Runnable() {
-						@Override
-						public void run() {
-							double ext = ExactTPS.getTPS();
-							if (ext > 20 || ext == 0) {
-								ext = 20;
-							}
-							exactTPS = ext;
-						}
-					}, 0L);
-				} catch (IllegalStateException e) {
-					btk.cancel();
+		btk = Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
+			try {
+				double ext = ExactTPS.getTPS();
+				if (ext > 20 || ext == 0) {
+					ext = 20;
 				}
+				exactTPS = ext;
+			} catch (IllegalStateException e) {
+				task.cancel();
 			}
-
 		}, 60L, 1L);
 	}
 
@@ -184,45 +170,39 @@ public class Monitor {
 	}
 
 	public static void createGraph() {
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
-
-				double ctps = ExactTPS.getTPS(20);
-				double medtps = Double.valueOf(getTPS(1));
-				if (medtps > 15) {
-					medtps = 15.0;
-				}
-				if (ctps > 20) {
-					ctps = 20.0;
-				}
-
-				double min = medtps - 5;
-
-				double ntps = 89 - (ctps - min) * 8;
-				// Bukkit.getLogger().info(String.valueOf(ntps));
-				for (int i = 89; i > 9; i--) {
-					if (i == (int) ntps) {
-						colors[124][i] = 18;
-
-					} else if (i == (int) ntps + 1) {
-						colors[124][i] = -124;
-					} else if (i > ntps) {
-						colors[124][i] = -122;
-					} else {
-						colors[124][i] = 32;
-					}
-				}
-
-				// BEGIN GRAPHING
-				for (int i = 3; i < 124; i++) {
-					for (int j = 3; j < 90; j++) {
-						colors[i][j] = colors[i + 1][j];
-					}
-				}
-
+		Bukkit.getAsyncScheduler().runAtFixedRate(Main.p, (task) -> {
+			double ctps = ExactTPS.getTPS(20);
+			double medtps = ExactTPS.getTPS(5);
+			if (medtps > 15) {
+				medtps = 15.0;
 			}
-		}, 7L, 7L);
+			if (ctps > 20) {
+				ctps = 20.0;
+			}
+
+			double min = medtps - 5;
+
+			double ntps = 89 - (ctps - min) * 8;
+			for (int i = 89; i > 9; i--) {
+				if (i == (int) ntps) {
+					colors[124][i] = 18;
+
+				} else if (i == (int) ntps + 1) {
+					colors[124][i] = -124;
+				} else if (i > ntps) {
+					colors[124][i] = -122;
+				} else {
+					colors[124][i] = 32;
+				}
+			}
+
+			for (int i = 3; i < 124; i++) {
+				for (int j = 3; j < 90; j++) {
+					colors[i][j] = colors[i + 1][j];
+				}
+			}
+
+		}, 7L * 50L, 7L * 50L, TimeUnit.MILLISECONDS);
 	}
 
 }

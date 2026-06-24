@@ -79,9 +79,7 @@ public class Approximate {
 		}
 		s.sendMessage(
 				Main.PREFIX + "We are getting the benchmark results. This may take a while depending on your download speed. Please wait....");
-		Bukkit.getScheduler().runTaskAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		Bukkit.getAsyncScheduler().runNow(Main.p, (task) -> {
 
 				inuse = true;
 
@@ -121,9 +119,7 @@ public class Approximate {
 				String MBUP = SpeedTest.df.format(upspeed);
 				String MIBUP = SpeedTest.df.format(upspeed * 8.0f);
 
-				Bukkit.getScheduler().runTask(Main.p, new Runnable() {
-					@Override
-					public void run() {
+				Bukkit.getGlobalRegionScheduler().execute(Main.p, () -> {
 						for (CommandSender cs : receivers) {
 							cs.sendMessage("");
 							cs.sendMessage("§2§l⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛§f§l BENCHMARK RESULTS §2§l⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛");
@@ -136,7 +132,6 @@ public class Approximate {
 								cs.sendMessage("  §2✸ §fCPU Score: §e" + br.getStringifiedSth(true));
 								cs.sendMessage("  §2✸ §fThread Score: §e" + br.getStringifiedTh(true));
 							} else {
-                                // cs.sendMessage("  §eBenchmark feature coming soon!");
                                 cs.sendMessage("  §cThere was an error getting the full benchmark results.");
                                 cs.sendMessage("  §cYour CPU might be unsupported.");
 							}
@@ -153,11 +148,8 @@ public class Approximate {
 						}
 						receivers.clear();
 						inuse = false;
-					}
 				});
-			}
-
-		});
+			});
 	}
 
 }

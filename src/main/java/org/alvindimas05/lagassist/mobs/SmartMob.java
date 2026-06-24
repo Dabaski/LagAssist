@@ -117,7 +117,7 @@ public class SmartMob implements Listener {
 		SpawnReason reason = e.getSpawnReason();
 
 		if (nogravityastand && (ent.getType() == EntityType.ARMOR_STAND)) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.p, () -> {
+			Bukkit.getGlobalRegionScheduler().runDelayed(Main.p, (task) -> {
 
                 if (Main.paper) {
                     PaperOnly.freezeArmorstand((ArmorStand) e.getEntity());

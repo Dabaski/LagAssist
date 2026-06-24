@@ -44,9 +44,7 @@ public class ChkAnalyse {
 				scores.add(new ChkStats(ch, false));
 			}
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		Bukkit.getAsyncScheduler().runNow(Main.p, (task) -> {
 
 				for (ChkStats ch : scores) {
 					ch.genScores();
@@ -63,7 +61,6 @@ public class ChkAnalyse {
 
 				p.sendMessage("");
 				p.sendMessage("§2§l⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛");
-			}
 		});
 
 	}

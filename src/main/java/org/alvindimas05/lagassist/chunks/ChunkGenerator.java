@@ -14,7 +14,7 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import org.alvindimas05.lagassist.utils.VersionMgr;
 
@@ -22,7 +22,7 @@ public class ChunkGenerator {
 
 	private static Object chunkProvider;
 	private static World world;
-	private static BukkitTask gentask;
+	private static ScheduledTask gentask;
 
 	// WORLDBORDER VALUES
 	private static int maxx;
@@ -108,9 +108,7 @@ public class ChunkGenerator {
 		// Prepare list of chunks to pregenerate. It will further be used to pregenerate
 		// the world.
 
-		Bukkit.getScheduler().runTaskAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		Bukkit.getAsyncScheduler().runNow(Main.p, (task) -> {
 				List<int[]> chunks = new ArrayList<int[]>();
 
 				int x = xfin;
@@ -138,15 +136,12 @@ public class ChunkGenerator {
 					i++;
 				}
 				startGen(chunks, millis);
-			}
 		});
 	}
 
 	private static void startGen(List<int[]> chunks, int millis) {
 		currenti = 0;
-		gentask = Bukkit.getScheduler().runTaskTimer(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		gentask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
 				long time = System.currentTimeMillis();
 				for (int i = currenti; i < chunks.size(); i++) {
 					pregenChunk(chunks.get(i));
@@ -165,13 +160,12 @@ public class ChunkGenerator {
 						}
 					}
 				}
-				gentask.cancel();
+				task.cancel();
 				gentask = null;
 				Bukkit.getLogger()
 						.info("§e[§a✪§e] §fThe pregeneration of the §2" + Chat.capitalize(world.getName())
 								+ " §fworld is finished. Thank you for your patience.");
 
-			}
 		}, 1L, 1L);
 	}
 

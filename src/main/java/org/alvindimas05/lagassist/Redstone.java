@@ -11,8 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 public class Redstone implements Listener {
 
@@ -24,7 +23,7 @@ public class Redstone implements Listener {
 	private static int chance;
 	private static int ticks;
 
-	private static BukkitTask br;
+	private static ScheduledTask br;
 
 	public static void Enabler(boolean reload) {
 		redstoneculler = false;
@@ -43,21 +42,19 @@ public class Redstone implements Listener {
 		if (!redstoneculler) {
 			redstoneculler = true;
 			setTimer();
-		} else if (Bukkit.getScheduler().isCurrentlyRunning(br.getTaskId())) {
-			br.cancel();
+		} else {
+			if (br != null) {
+				br.cancel();
+			}
 			setTimer();
 		}
 	}
 
 	private static void setTimer() {
-		br = new BukkitRunnable() {
-			@Override
-			public void run() {
-				redstoneculler = false;
-				V1_11.observerBreaker();
-			}
-
-		}.runTaskLater(Main.p, ticks);
+		br = Bukkit.getGlobalRegionScheduler().runDelayed(Main.p, (task) -> {
+			redstoneculler = false;
+			V1_11.observerBreaker();
+		}, ticks);
 	}
 
 	@EventHandler

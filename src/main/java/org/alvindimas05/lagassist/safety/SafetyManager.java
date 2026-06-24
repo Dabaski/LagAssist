@@ -2,6 +2,7 @@ package org.alvindimas05.lagassist.safety;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.alvindimas05.lagassist.Main;
 import org.bukkit.Bukkit;
@@ -40,9 +41,7 @@ public class SafetyManager {
 	}
 
 	public static void startTask() {
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.p, new Runnable() {
-			@Override
-			public void run() {
+		Bukkit.getAsyncScheduler().runAtFixedRate(Main.p, (task) -> {
 
 				long bytes;
 				try {
@@ -51,21 +50,16 @@ public class SafetyManager {
 						return;
 					}
 
-					Bukkit.getScheduler().scheduleSyncDelayedTask(Main.p, new Runnable() {
-						@Override
-						public void run() {
+					Bukkit.getGlobalRegionScheduler().execute(Main.p, () -> {
 							Bukkit.getLogger().warning(
 									"Server doesn't have enough memory to keep running. Shutting down server!");
 							Bukkit.getServer().shutdown();
-						}
-					}, 0L);
+					});
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
 
-		}, 60L, 1L);
+		}, 60L * 50L, 1L * 50L, TimeUnit.MILLISECONDS);
 	}
 
 }

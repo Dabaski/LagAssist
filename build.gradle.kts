@@ -1,10 +1,9 @@
-
 plugins {
     id("java")
-//    id("io.papermc.paperweight.userdev") version "1.7.1"
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -13,27 +12,18 @@ repositories {
     maven("https://repo.stellardrift.ca/")
 }
 
-
 group = "org.alvindimas05.lagassist"
-version = "2.32.3"
+version = "2.33.0"
 description = "LagAssist"
 
 java {
     toolchain {
-//         Minecraft 1.8.8 - 1.16.5
-//         languageVersion.set(JavaLanguageVersion.of(8))
-//         Minecraft 1.17 - 1.20.2
-//         languageVersion.set(JavaLanguageVersion.of(17))
-//         Minecraft 1.20.3+
-         languageVersion.set(JavaLanguageVersion.of(21))
+         languageVersion.set(JavaLanguageVersion.of(26))
     }
 }
 
-
 dependencies {
-//    Older paper-api only supports up to 1.16.5
-//    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("dev.folia:folia-api:26.1.2.local-SNAPSHOT")
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")
 
     implementation("com.google.code.gson:gson:2.11.0")
@@ -46,7 +36,3 @@ dependencies {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
-
-//tasks.assemble {
-//    dependsOn(tasks.reobfJar)
-//}

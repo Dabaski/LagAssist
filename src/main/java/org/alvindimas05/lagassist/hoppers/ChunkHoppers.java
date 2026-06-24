@@ -91,11 +91,8 @@ public class ChunkHoppers implements Listener {
 	}
 
 	private static void runTask() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.p, new Runnable() {
-			@Override
-			public void run() {
-				tilecache.tick();
-			}
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
+			tilecache.tick();
 		}, 1L, 1L);
 	}
 

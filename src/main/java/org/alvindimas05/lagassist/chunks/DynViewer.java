@@ -47,7 +47,7 @@ public class DynViewer implements Listener {
 	}
 
 	private static void runTask() {
-		Bukkit.getScheduler().runTaskTimer(Main.p, () -> setViews(), 0, 600);
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> setViews(), 0, 600);
 	}
 
 	public static void setViews() {
@@ -94,7 +94,7 @@ public class DynViewer implements Listener {
 		}
 		
 		// TODO: FIX Dynamic view
-		Bukkit.getScheduler().runTaskLater(Main.p, () -> PaperOnly.setViewDistance(p, currChunks), 25);
+		Bukkit.getGlobalRegionScheduler().runDelayed(Main.p, (task) -> PaperOnly.setViewDistance(p, currChunks), 25);
 
 	}
 

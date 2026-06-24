@@ -112,7 +112,7 @@ public class MonTools implements Listener {
     }
 
     public static void StatsBar() {
-        Bukkit.getScheduler().runTaskTimer(Main.p, () -> {
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (mtask) -> {
             if (actionmon.isEmpty()) {
                 return;
             }
@@ -130,26 +130,24 @@ public class MonTools implements Listener {
             String chunks = String.valueOf(getChunkCount());
             String ents = String.valueOf(getEntCount());
 
-            Bukkit.getScheduler().runTaskAsynchronously(Main.p, () -> {
-                String tps;
-                if (tpsraw > 18) {
-                    tps = "§a" + format.format(tpsraw);
-                } else if (tpsraw > 15) {
-                    tps = "§e" + format.format(tpsraw);
-                } else {
-                    tps = "§2" + format.format(tpsraw);
-                }
+            String tps;
+            if (tpsraw > 18) {
+                tps = "§a" + format.format(tpsraw);
+            } else if (tpsraw > 15) {
+                tps = "§e" + format.format(tpsraw);
+            } else {
+                tps = "§2" + format.format(tpsraw);
+            }
 
-                String message = ChatColor.translateAlternateColorCodes('&',
-                    stbmsg.replaceAll("\\{TPS\\}", tps)
-                        .replaceAll("\\{MEM\\}", format.format(SpecsGetter.FreeRam() / 1024))
-                        .replaceAll("\\{CHKS\\}", chunks)
-                        .replaceAll("\\{ENT\\}", ents));
+            String message = ChatColor.translateAlternateColorCodes('&',
+                stbmsg.replaceAll("\\{TPS\\}", tps)
+                    .replaceAll("\\{MEM\\}", format.format(SpecsGetter.FreeRam() / 1024))
+                    .replaceAll("\\{CHKS\\}", chunks)
+                    .replaceAll("\\{ENT\\}", ents));
 
-                for (Player p : onlinePlayers) {
-                    Reflection.sendAction(p, message);
-                }
-            });
+            for (Player p : onlinePlayers) {
+                Reflection.sendAction(p, message);
+            }
         }, stbshowdl, stbshowdl);
     }
 

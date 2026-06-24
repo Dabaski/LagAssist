@@ -184,18 +184,15 @@ public class Reflection {
 	
 	private static Object minecraftserver = null;
 	public static double getTPS(int number) {
-		
 		try {
-		if (minecraftserver == null) {
-			minecraftserver = Methods.getServer.mthd.invoke(null);
-		}
-		
-		Field f = Reflection.getField(Classes.MinecraftServer.type, "recentTps");
-		f.setAccessible(true);
-		
-		return ((double[])f.get(minecraftserver))[number];
+			double[] tps = Bukkit.getTPS();
+			if (tps != null && number < tps.length) {
+				return tps[number];
+			}
+			return 20.0D;
+		} catch (UnsupportedOperationException e) {
+			return 20.0D;
 		} catch(Exception e) {
-			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -234,9 +231,10 @@ public class Reflection {
 			String path = classname.replace("{nms}", "net.minecraft.server" + (VersionMgr.isV_17Plus() ? "" : "." + version))
 					.replace("{nmsv}", "net.minecraft.server." + version)
 					.replace("{nm}", "net.minecraft" + (VersionMgr.isV_17Plus() ? "" : "." + version))
-					.replace("{cb}", "org.bukkit.craftbukkit." + version)
+					.replace("{cb}", "org.bukkit.craftbukkit" + (VersionMgr.isV_17Plus() ? "" : "." + version))
 					.replace("{b}", "org.bukkit");
-			return Class.forName(path);
+			ClassLoader cl = Bukkit.getServer().getClass().getClassLoader();
+			return Class.forName(path, false, cl);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -41,7 +41,7 @@ public class ChkLimiter implements Listener {
 	static int i = 0;
 
 	private static void runTask() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.p, () -> {
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
 			i++;
 
 			if (i % Main.config.getInt("limiter.timer-time") == 0) {

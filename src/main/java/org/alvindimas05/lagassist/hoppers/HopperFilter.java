@@ -53,11 +53,8 @@ public class HopperFilter implements Listener {
 	}
 	
 	private static void runTask() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.p, new Runnable() {
-			@Override
-			public void run() {
-				filtercache.tick();
-			}
+		Bukkit.getGlobalRegionScheduler().runAtFixedRate(Main.p, (task) -> {
+			filtercache.tick();
 		}, 1L, 1L);
 	}
 	

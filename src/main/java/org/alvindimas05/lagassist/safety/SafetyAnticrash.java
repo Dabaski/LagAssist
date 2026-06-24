@@ -89,9 +89,9 @@ public class SafetyAnticrash {
 
 	private static void dropPlayer(Player p, Channel ch, String reason) {
 		Main.p.getLogger().warning("Player " + p.getName() + " dropped for malicious packets: " + reason);
-		Bukkit.getScheduler().runTask(Main.p, () -> {
+		p.getScheduler().execute(Main.p, () -> {
 			p.kickPlayer("Malicious Packets - " + reason);
-		});
+		}, () -> {}, 0L);
 		dropped.add(ch);
 	}
 

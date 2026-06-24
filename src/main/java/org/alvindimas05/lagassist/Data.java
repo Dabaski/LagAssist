@@ -70,7 +70,7 @@ public class Data {
 
 		last = System.currentTimeMillis();
 
-		Bukkit.getScheduler().runTaskAsynchronously(Main.p, () -> {
+		Bukkit.getAsyncScheduler().runNow(Main.p, (task) -> {
 			try {
 				data.save(dataf);
 			} catch (IOException e) {
